@@ -1,40 +1,30 @@
 
-import {useQuery, gql} from '@apollo/client'
-// import { table } from 'console';
-
-const GET_CARS = gql `
-    query GetCars {
-        cars {
-            Nice_classification
-            Number
-            id
-            Brand_name
-            Designation
-            Status
-            Office
-            IPR
-            Owner
-            __typename
-        }
-    }
-`
+import {useQuery }  from '@apollo/client'
+import { GET_CARS } from '../queries/carQueries';
+import CarRow from './CarRow';
 
 
 
-export default function Cars() {
+
+
+export default function Cars( ) {
+    
+
+    
     const {loading, error, data} = useQuery(GET_CARS)
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error </p>;
-
-
+                if (loading) return <p>Loading...</p>;
+                if (error) return <p>Error </p>;
 
   return (
+   
+
     <>
         {!loading && !error && (
 
-            <table class="table-auto w-full">
-                <thead>
+        <div class="overflow-x-auto relative">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead  class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th class="px-4 py-2">Nice classification</th>
                         <th class="px-4 py-2">Number</th>
@@ -48,7 +38,7 @@ export default function Cars() {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.cars.map((car) => (
+                    {/* {data.cars.map((car) => (
                         <tr>
                             <td class="border px-4 py-2">{car.Nice_classification}</td>
                             <td class="border px-4 py-2">{car.Number}</td>
@@ -62,14 +52,18 @@ export default function Cars() {
                                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                     Edit
                                 </button>
-                                <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                <button   class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={deleteCar}>
                                     Delete
                                 </button>
                             </td>
                         </tr>
+                    ))} */}
+                    {data.cars.map((car) => (
+                        <CarRow key={car.id} car={car} />
                     ))}
                 </tbody>
             </table>
+        </div>
 
 
                         
