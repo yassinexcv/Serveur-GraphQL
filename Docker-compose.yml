@@ -1,64 +1,54 @@
-version: '3'
+# docker compose version which is currently 3.8
+version: "3.8"
 
- 
-
+# services : is a list of our container
 services:
+  # name is optional for our mongodb
+  mymongodb:
+    # since mongo is an offical image we can use it.
+    image: "mongo"
 
-  web:
-
-    image: nginx
-
+    # the port that we want to publish for mongodb
     ports:
+      - "27017:27017"
 
-      - "80:80"
-
+    # our mongodb depends on volume to keep the data alive.
     volumes:
+      - data:/data/db
 
-      - ./nginx.conf:/etc/nginx/nginx.conf
+  # name is optional for our backend
+  backend:
+    # to build an image based on Dockerfile
+    # it looks in this folder to find Dockerfile to build an image
+    build: ./server
+    # the port that we want to publish for backend
+    ports:
+      - "5000:5000"
 
+    # depends_on means it will start our backend container once mongo-container is  up and running.
     depends_on:
+      - mymongodb
 
-      - app
+  # name is optional for our frontend
+  frontend:
+    # to build an image based on Dockerfile
+    # it looks in this folder to find Dockerfile to build an image
+    build: ./client
 
-  app:
-
-    build: .
-
-    volumes:
-
-      - .:/app
-
+    # the port that we want to publish for frontend
     ports:
-
       - "3000:3000"
-
-    environment:
-
-      - RAILS_ENV=development
-
-      - RACK_ENV=development
-
-      - PORT=3000
-
-    depends_on:
-
-      - db
-
-  db:
-
-    image: postgres:9.6
-
+    # add bind mount volume to keep have updated source code
     volumes:
+      - ./client/src:/app/src
+    # allow interactive mode
+    stdin_open: true
+    tty: true
 
-      - db_data:/var/lib/postgresql/data
+    # it will start our frontend container once backend-container is  up and running.
+    depends_on:
+      - backend
 
-    environment:
-
-      - POSTGRES_USER=postgres
-
-      - POSTGRES_PASSWORD=postgres
-
-      - POSTGRES_DB=postgres
-
-  volumes:
-      - db-data:/var/lib/postgresql/data
+# declare the volumes name that our app is using.
+volumes:
+  data:
